@@ -48,6 +48,8 @@ input::placeholder{color:#ffffff66}
 .big{font-size:5rem;animation:hb 1s infinite}@keyframes hb{50%{transform:scale(1.15)}}
 .flip{animation:pop .7s cubic-bezier(.2,1.6,.4,1) both}@keyframes pop{from{transform:scale(.3);opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mute{position:fixed;top:12px;right:12px;z-index:60;width:44px;height:44px;border-radius:50%;border:0;background:#ffffff26;color:var(--ink);font-size:1.25rem;cursor:pointer;backdrop-filter:blur(6px)}
+.mute:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
 </style>
 </head>
 <body>
@@ -98,6 +100,9 @@ input::placeholder{color:#ffffff66}
   <button class="btn" id="again">Ulangi kejutannya</button>
 </section>
 
+<audio id="bgm" src="Sound.mp3" loop preload="auto"></audio>
+<button id="mute" class="mute" aria-label="Matikan musik" hidden>🔊</button>
+
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 let NAME="Latuly";
@@ -139,8 +144,15 @@ function loop(){fx.clearRect(0,0,fc.width,fc.height);bits=bits.filter(b=>b.l>0&&
 
 function show(id){$$('.scene').forEach(s=>s.classList.toggle('on',s.id===id));scrollTo(0,0)}
 
+/* music */
+const bgm=$('#bgm'),mb=$('#mute');bgm.volume=.7;
+function setIcon(){mb.textContent=bgm.paused?'🔇':'🔊';mb.setAttribute('aria-label',bgm.paused?'Nyalakan musik':'Matikan musik')}
+function playMusic(){mb.hidden=false;bgm.play().then(setIcon).catch(setIcon)}
+mb.onclick=()=>{bgm.paused?bgm.play().then(setIcon).catch(setIcon):(bgm.pause(),setIcon())};
+
 /* scene 0 */
 function start(){
+  playMusic();
   $('#t1').textContent=`${NAME}, nyalain lilinnya yuk`;burst(innerWidth/2,innerHeight/2,90);show('s1')}
 $('#go').onclick=start;
 
